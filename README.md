@@ -8,17 +8,17 @@ We propose a novel Transformer architecture, named MSG-Transformer, which enable
 -----------------------------
 
 Transformers have offered a new methodology of designing neural networks for visual recognition. Compared to convolutional networks, Transformers enjoy the ability of referring to global features at each stage, yet the attention module brings higher computational overhead that obstructs the application of Transformers to process high-resolution visual data. This paper aims to alleviate the conflict between efficiency and flexibility, for which we propose a specialized token for each region that serves as a messenger (MSG). Hence, by manipulating these MSG tokens, one can flexibly exchange visual information across regions and the computational complexity is reduced. We then integrate the MSG token into a multi-scale architecture named MSG-Transformer. In standard image classification and object detection, MSG-Transformer achieves competitive performance and the inference on both GPU and CPU is accelerated.
-![block](./imgs/block.PNG)
-![arch](./imgs/arch.PNG)
+![block](./imgs/block.png)
+![arch](./imgs/arch.png)
 
 ## Noting
 * Code is coming soon.
 
 ## Main Results
 ### ImageNet-1K
-![imagenet](./imgs/imagenet.PNG)
+![imagenet](./imgs/imagenet.png)
 ### MS-COCO
-![coco](./imgs/coco.PNG)
+![coco](./imgs/coco.png)
 
 ## Citation
 If you find this repository/work helpful in your research, welcome to cite the paper.
