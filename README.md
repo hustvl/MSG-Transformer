@@ -72,9 +72,17 @@ python -m torch.distributed.launch --nproc_per_node <GPU-number> main.py \
 
 ## Main Results
 ### ImageNet-1K
-![imagenet](./imgs/imagenet.png)
+| **Model** | **Input size** | **Params** | **FLOPs** | **GPU throughput (images/s)** | **CPU Latency** | Top-1 ACC (%) |
+|-----------|----------------|------------|------------|------------|------------|------------|
+| MSG-Trans-T | 224 | 28M  | 4.6G | 696.7 | 150ms  | 80.9 |
+| MSG-Trans-S | 224 | 50M  | 8.9G | 401.0 | 262ms  | 83.0 |
+| MSG-Trans-B | 224 | 88M  | 15.8G  | 262.6 | 437ms  | 83.5 |
 ### MS-COCO
-![coco](./imgs/coco.png)
+| **Method** | **box mAP** | **mask mAP** | **Params** | **FLOPs** | **FPS** |
+|------------|-------------|--------------|------------|-----------|---------|
+| MSG-Trans-T  | 50.3        | 43.6         | 86M        | 748G      | 9.4     |
+| MSG-Trans-S  | 51.8        | 44.8         | 107M       | 842G      | 7.5     |
+| MSG-Trans-B  | 51.9        | 45.0         | 145M       | 990G      | 6.2     |
 
 ## Acknowledgements
 This repository is based on [Swin-Transformer](https://github.com/microsoft/Swin-Transformer) and [timm](https://github.com/rwightman/pytorch-image-models/). Thanks for their contributions to the community.
