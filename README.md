@@ -12,7 +12,7 @@ Transformers have offered a new methodology of designing neural networks for vis
 ![arch](./imgs/arch.png)
 
 ## Updates
-* 2021.6.2 Code for ImageNet classification is released.
+* 2021.6.2 Code for ImageNet classification is released. Pre-trained models will be available soon. 
 
 ## Requirements
 * PyTorch==1.7
