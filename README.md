@@ -79,7 +79,7 @@ python -m torch.distributed.launch --nproc_per_node <GPU-number> main.py \
 | MSG-Trans-S | 224 | 56M  | 8.4G | 422.5 | 272ms  | 83.4 |
 | MSG-Trans-B | 224 | 84M  | 14.2G  | 267.6 | 424ms  | 84.0 |
 ### MS-COCO
-| **Method** | **mAP**$^{box}$ | **mAP**$^{mask}$ | **Params** | **FLOPs** | **FPS** |
+| **Method** | **mAP** $^{box}$ | **mAP** $^{mask}$ | **Params** | **FLOPs** | **FPS** |
 |:-:|:-:|:-:|:-:|:-:|:-:|
 | MSG-Trans-T  | 51.4        | 44.6         | 83M        | 731G      | 9.1     |
 | MSG-Trans-S  | 52.5        | 45.5         | 113M       | 831G      | 7.5     |
