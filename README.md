@@ -12,6 +12,7 @@ Transformers have offered a new methodology of designing neural networks for vis
 ![arch](./imgs/arch.png)
 
 ## Updates
+* 2021.12.1 The architecture is updated with stronger performance on both ImageNet and MS-COCO.
 * 2021.6.2 Code for ImageNet classification is released. Pre-trained models will be available soon. 
 
 ## Requirements
@@ -22,7 +23,7 @@ Transformers have offered a new methodology of designing neural networks for vis
 * yacs==0.1.8
 
 ## Data Preparation
-Please organize your ImageNet dataset as followins.
+Please organize your ImageNet dataset as follows.
 ```
 path/to/ImageNet
 |-train
@@ -72,17 +73,17 @@ python -m torch.distributed.launch --nproc_per_node <GPU-number> main.py \
 
 ## Main Results
 ### ImageNet-1K
-| **Model** | **Input size** | **Params** | **FLOPs** | **GPU throughput (images/s)** | **CPU Latency** | Top-1 ACC (%) |
+| **Model** | **Input size** | **Params** | **FLOPs** | **GPU images/s** | **CPU latency** | Top-1 acc (%) |
 |:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| MSG-Trans-T | 224 | 28M  | 4.6G | 696.7 | 150ms  | 80.9 |
-| MSG-Trans-S | 224 | 50M  | 8.9G | 401.0 | 262ms  | 83.0 |
-| MSG-Trans-B | 224 | 88M  | 15.8G  | 262.6 | 437ms  | 83.5 |
+| MSG-Trans-T | 224 | 25M  | 3.8G | 726.5 | 157ms  | 82.4 |
+| MSG-Trans-S | 224 | 56M  | 8.4G | 422.5 | 272ms  | 83.4 |
+| MSG-Trans-B | 224 | 84M  | 14.2G  | 267.6 | 424ms  | 84.0 |
 ### MS-COCO
-| **Method** | **box mAP** | **mask mAP** | **Params** | **FLOPs** | **FPS** |
+| **Method** | **mAP**$^{box}$ | **mAP**$^{mask}$ | **Params** | **FLOPs** | **FPS** |
 |:-:|:-:|:-:|:-:|:-:|:-:|
-| MSG-Trans-T  | 50.3        | 43.6         | 86M        | 748G      | 9.4     |
-| MSG-Trans-S  | 51.8        | 44.8         | 107M       | 842G      | 7.5     |
-| MSG-Trans-B  | 51.9        | 45.0         | 145M       | 990G      | 6.2     |
+| MSG-Trans-T  | 51.4        | 44.6         | 83M        | 731G      | 9.1     |
+| MSG-Trans-S  | 52.5        | 45.5         | 113M       | 831G      | 7.5     |
+| MSG-Trans-B  | 52.8        | 45.7         | 142M       | 956G      | 6.1     |
 
 ## Acknowledgements
 This repository is based on [Swin-Transformer](https://github.com/microsoft/Swin-Transformer) and [timm](https://github.com/rwightman/pytorch-image-models/). Thanks for their contributions to the community.

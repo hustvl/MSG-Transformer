@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from timm.models.layers import DropPath, to_2tuple, trunc_normal_
+from torch.nn.modules import padding
 
 
 class Mlp(nn.Module):
@@ -39,7 +40,7 @@ def window_partition(x, window_size, shuf_size):
     return windows
 
 
-def window_reverse(windows, window_size, shuf_size, H, W):
+def window_reverse(windows, window_size, shuf_size, H, W, nchw=False):
     """
     Args:
         windows: (B*num_region, shuf_size**2, window_size**2, C)
@@ -56,11 +57,14 @@ def window_reverse(windows, window_size, shuf_size, H, W):
     num_region_w = W//window_size//shuf_size
     x = windows.view(B, num_region_h, num_region_w,
         shuf_size, shuf_size, window_size, window_size, -1)
-    x = x.permute(0, 1, 3, 5, 2, 4, 6, 7).contiguous().view(B, H, W, -1)
+    if nchw:
+        x = x.permute(0, 7, 1, 3, 5, 2, 4, 6).contiguous().view(B, -1, H, W)
+    else:
+        x = x.permute(0, 1, 3, 5, 2, 4, 6, 7).contiguous().view(B, H, W, -1)
     return x
 
 
-def shuffel_msg(x):
+def shuffle_msg(x):
     # (B, G, win**2+1, C)
     B, G, N, C = x.shape
     if G == 1:
@@ -191,7 +195,7 @@ class MSGBlock(nn.Module):
 
     def __init__(self, dim, input_resolution, num_heads, window_size=7, mlp_ratio=4., 
                 qkv_bias=True, qk_scale=None, drop=0., attn_drop=0., drop_path=0.,
-                act_layer=nn.GELU, norm_layer=nn.LayerNorm, manip_op=shuffel_msg):
+                act_layer=nn.GELU, norm_layer=nn.LayerNorm, manip_op=shuffle_msg):
         super().__init__()
         self.dim = dim
         self.input_resolution = input_resolution
@@ -258,8 +262,8 @@ class PatchMerging(nn.Module):
         super().__init__()
         self.input_resolution = input_resolution
         self.dim = dim
-        self.reduction = nn.Linear(4 * dim, 2 * dim, bias=False)
-        self.norm = norm_layer(4 * dim)
+        self.reduction = nn.Conv2d(dim, 2 * dim, 3, 2, 1)
+        self.norm = norm_layer(2 * dim)
         self.nxt_shuf_size = nxt_shuf_size
 
     def forward(self, x):
@@ -269,31 +273,19 @@ class PatchMerging(nn.Module):
         win_size = int(win_size_2 ** 0.5)
         B = B_ // (H//shuf_size//win_size) // (W//shuf_size//win_size)
 
-        msg_token = window_reverse(x[:, :, 0].unsqueeze(2), 1, shuf_size, H//win_size, W//win_size)
-        msg0 = msg_token[:, 0::2, 0::2, :]  # B H/2 W/2 C
-        msg1 = msg_token[:, 1::2, 0::2, :]  # B H/2 W/2 C
-        msg2 = msg_token[:, 0::2, 1::2, :]  # B H/2 W/2 C
-        msg3 = msg_token[:, 1::2, 1::2, :]  # B H/2 W/2 C
+        msg_token = window_reverse(
+            x[:, :, 0].unsqueeze(2), 1, shuf_size, H//win_size, W//win_size, nchw=True)
 
-        msg_token = torch.cat([msg0, msg1, msg2, msg3], -1)  # B H/2 W/2 4*C
-        msg_token = msg_token.view(B, H//win_size//2, W//win_size//2, 4 * C)  # B H/2*W/2 4*C
-
+        msg_token = self.reduction(msg_token).permute(0, 2, 3, 1)
         msg_token = self.norm(msg_token)
-        msg_token = self.reduction(msg_token)
         
         if msg_token.shape[1] >= self.nxt_shuf_size:
             msg_token = window_partition(msg_token, 1, self.nxt_shuf_size)
 
-        x = window_reverse(x[:, :, 1:], win_size, shuf_size, H, W)
-        x0 = x[:, 0::2, 0::2, :]  # B H/2 W/2 C
-        x1 = x[:, 1::2, 0::2, :]  # B H/2 W/2 C
-        x2 = x[:, 0::2, 1::2, :]  # B H/2 W/2 C
-        x3 = x[:, 1::2, 1::2, :]  # B H/2 W/2 C
-        x = torch.cat([x0, x1, x2, x3], -1)  # B H/2 W/2 4*C
-        x = x.view(B, H//2, W//2, 4 * C)  # B H/2*W/2 4*C
+        x = window_reverse(x[:, :, 1:], win_size, shuf_size, H, W, nchw=True)
 
+        x = self.reduction(x).permute(0, 2, 3, 1)
         x = self.norm(x)
-        x = self.reduction(x)
 
         if x.shape[1] // win_size >= self.nxt_shuf_size:
             x = window_partition(x, win_size, self.nxt_shuf_size)
@@ -311,11 +303,11 @@ class PatchMerging(nn.Module):
         # norm for patch tokens
         flops = H * W * self.dim
         # mlp for patch tokens
-        flops += (H // 2) * (W // 2) * 4 * self.dim * 2 * self.dim
+        flops += (H // 2) * (W // 2) * 3 * 3 * self.dim * 2 * self.dim
         # norm for msg tokens
         flops += (H // win_size) * (W // win_size) * self.dim
         # mlp for msg tokens
-        flops += (H // 2 // win_size) * (W // 2 // win_size) * 4 * self.dim * 2 * self.dim
+        flops += (H // 2 // win_size) * (W // 2 // win_size) * 3 * 3 * self.dim * 2 * self.dim
         return flops
 
 
@@ -343,7 +335,7 @@ class BasicLayer(nn.Module):
     def __init__(self, dim, input_resolution, depth, num_heads, window_size,
                 mlp_ratio=4., qkv_bias=True, qk_scale=None, drop=0., attn_drop=0.,
                 drop_path=0., norm_layer=nn.LayerNorm, downsample=None,  
-                nxt_shuf_size=2, manip_op=shuffel_msg):
+                nxt_shuf_size=2, manip_op=shuffle_msg):
 
         super().__init__()
         self.dim = dim
@@ -412,7 +404,7 @@ class PatchEmbed(nn.Module):
         self.in_chans = in_chans
         self.embed_dim = embed_dim
 
-        self.proj = nn.Conv2d(in_chans, embed_dim, kernel_size=patch_size, stride=patch_size)
+        self.proj = nn.Conv2d(in_chans, embed_dim, kernel_size=7, stride=patch_size, padding=2)
         if norm_layer is not None:
             self.norm = norm_layer(embed_dim)
         else:
@@ -430,7 +422,7 @@ class PatchEmbed(nn.Module):
 
     def flops(self):
         Ho, Wo = self.patches_resolution
-        flops = Ho * Wo * self.embed_dim * self.in_chans * (self.patch_size[0] * self.patch_size[1])
+        flops = Ho * Wo * self.embed_dim * self.in_chans * (7 * 7)
         if self.norm is not None:
             flops += Ho * Wo * self.embed_dim
         return flops
@@ -501,7 +493,7 @@ class MSGTransformer(nn.Module):
         dpr = [x.item() for x in torch.linspace(0, drop_path_rate, sum(depths))]  # stochastic depth decay rule
 
         if manip_type == 'shuf':
-            manip_op = shuffel_msg
+            manip_op = shuffle_msg
         elif manip_type == 'none':
             manip_op = None
         else:

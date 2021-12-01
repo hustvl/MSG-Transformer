@@ -4,7 +4,7 @@ MODEL:
   DROP_PATH_RATE: 0.3
   MSG:
     EMBED_DIM: 96
-    DEPTHS: [ 2, 2, 18, 2 ]
+    DEPTHS: [ 2, 4, 12, 4 ]
     NUM_HEADS: [ 3, 6, 12, 24 ]
     WINDOW_SIZE: 7
     SHUF_SIZE: [4, 4, 2, 1]
