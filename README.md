@@ -91,10 +91,10 @@ This repository is based on [Swin-Transformer](https://github.com/microsoft/Swin
 ## Citation
 If you find this repository/work helpful in your research, welcome to cite the paper.
 ```
-@article{fang2021msgtransformer,
-  title={MSG-Transformer: Exchanging Local Spatial Information by Manipulating Messenger Tokens},
-  author={Jiemin Fang and Lingxi Xie and Xinggang Wang and Xiaopeng Zhang and Wenyu Liu and Qi Tian},
-  journal={arXiv:2105.15168},
-  year={2021}
+@inproceedings{fang2021msg,
+  title={Msg-transformer: Exchanging local spatial information by manipulating messenger tokens},
+  author={Fang, Jiemin and Xie, Lingxi and Wang, Xinggang and Zhang, Xiaopeng and Liu, Wenyu and Tian, Qi},
+  booktitle={CVPR},
+  year={2022}
 }
 ```
