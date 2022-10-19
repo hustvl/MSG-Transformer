@@ -1,0 +1,11 @@
+MODEL:
+  TYPE: msg
+  NAME: msg_base_p4_win7_224
+  DROP_PATH_RATE: 0.5
+  MSG:
+    EMBED_DIM: 96
+    DEPTHS: [ 2, 4, 28, 4 ]
+    NUM_HEADS: [ 3, 6, 12, 24 ]
+    WINDOW_SIZE: 7
+    SHUF_SIZE: [4, 4, 2, 1]
+    MANIP_TYPE: shuf
