@@ -38,9 +38,9 @@ def main(config):
 
     #inference
     ds_test = dataset_test.create_dict_iterator()
-    data = next(ds_test)
-    output = network.predict(data["image"])
-    print(output)
+    for data in ds_test:
+        output = network.predict(data["image"])
+        print(output)
 
 
 if __name__ == '__main__':
