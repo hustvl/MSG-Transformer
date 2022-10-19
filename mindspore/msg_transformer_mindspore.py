@@ -1,7 +1,7 @@
 import mindspore.nn as nn
 import mindspore
 import numpy as np
-from .timm_ms import DropPath, to_2tuple, trunc_normal_
+from timm_ms import DropPath, to_2tuple, trunc_normal_
 from mindspore.common.initializer import initializer
 
 

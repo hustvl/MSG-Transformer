@@ -4,8 +4,8 @@ import argparse
 import numpy as np
 
 from configs import get_config
-from . import build_model
-from mindvision.classification.dataset import Cifar10
+from build import build_model
+from mindvision.classification.dataset import ImageNet
 
 def parse_option():
     parser = argparse.ArgumentParser('MSG-Transformer training and evaluation script', add_help=False)
@@ -24,9 +24,9 @@ def parse_option():
     return args, config
 
 def main(config):
-    download_test = Cifar10(path="./cifar", split="test", batch_size=2, repeat_num=1, shuffle=True, resize=224, download=True)
-    download_train = Cifar10(path="./cifar", split="train", batch_size=2, repeat_num=1, shuffle=True, resize=224, download=True)
 
+    download_train = ImageNet(path="./data/imagenet", split="train")
+    download_test = ImageNet(path="./data/imagenet", split="infer")
     dataset_train = download_train.run()
     dataset_test = download_test.run()
 

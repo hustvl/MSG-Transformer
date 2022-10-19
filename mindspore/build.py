@@ -1,4 +1,4 @@
-from .msg_transformer_mindspore import MSGTransformer
+from msg_transformer_mindspore import MSGTransformer
 
 def build_model(config):
     model_type = config.MODEL.TYPE
