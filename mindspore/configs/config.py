@@ -141,7 +141,7 @@ _C.TEST.CROP = True
 # overwritten by command line argument
 _C.AMP_OPT_LEVEL = ''
 # Path to output folder, overwritten by command line argument
-_C.OUTPUT = ''
+_C.OUTPUT = './logs/'
 # Tag of experiment, overwritten by command line argument
 _C.TAG = 'default'
 # Frequency to save checkpoint
