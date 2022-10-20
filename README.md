@@ -12,8 +12,9 @@ Transformers have offered a new methodology of designing neural networks for vis
 ![arch](./imgs/arch.png)
 
 ## Updates
-* 2021.12.1 The architecture is updated with stronger performance on both ImageNet and MS-COCO.
-* 2021.6.2 Code for ImageNet classification is released. Pre-trained models will be available soon. 
+* 2022.10.20 - A [MindSpore](https://www.mindspore.cn/en)-based implementation is provided.
+* 2021.12.1 - The architecture is updated with stronger performance on both ImageNet and MS-COCO.
+* 2021.6.2 - Code for ImageNet classification is released. Pre-trained models will be available soon. 
 
 ## Requirements
 * PyTorch==1.7
